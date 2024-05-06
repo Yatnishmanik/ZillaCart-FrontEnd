@@ -20,6 +20,9 @@ import { toast } from 'react-toastify';
 import CommentList from '../components/CommentList';
 import { io } from 'socket.io-client';
 import config from '../config'
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
+
 const socket = io('/', {
     reconnection: true
 })
@@ -82,7 +85,9 @@ const SinglePost = () => {
     const addComment = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.put(`${config.URL}/api/comment/post/${id}`, { comment });
+            const { data } = await axios.put(`${config.URL}/api/comment/post/${id}`, { comment },{headers: {
+              'authorization': `Bearer ${token}`
+          }});
             if (data.success === true) {
                 setComment('');
                 toast.success("comment added");

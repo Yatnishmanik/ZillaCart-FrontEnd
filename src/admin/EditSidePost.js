@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import config from '../config'
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
 
 const validationSchema = yup.object({
   title: yup.string().min(4).required("Post title is required"),
@@ -68,9 +70,10 @@ const EditSidePost = ({ placeholder }) => {
 
   const updatePost = async (values) => {
     try {
-        console.log("&&&&&&&&&&&&&&&")
         console.log(values);
-      const { data } = await axios.put(`${config.URL}/api/sidebar/update-post/${id}`, values);
+      const { data } = await axios.put(`${config.URL}/api/sidebar/update-post/${id}`, values,{headers: {
+        'authorization': `Bearer ${token}`
+    }});
       if (data.success === true) {
         toast.success("Post updated");
         navigate("/admin/sidedashboard");

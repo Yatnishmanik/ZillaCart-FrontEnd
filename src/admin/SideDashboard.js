@@ -10,6 +10,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { toast } from 'react-toastify';
 import config from '../config'
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
 
 const SideDashboard = () => {
     const [posts, setPosts] = useState([]);
@@ -33,7 +35,9 @@ const SideDashboard = () => {
     const deletePostById = async (e, id) => {
         if (window.confirm("Are you sure you want to delete this post?")) {
             try {
-                const { data } = await axios.delete(`${config.URL}/api/sidebar/delete-post/${id}`);
+                const { data } = await axios.delete(`${config.URL}/api/sidebar/delete-post/${id}`,{headers: {
+                    'authorization': `Bearer ${token}`
+                }});
                 if (data.success === true) {
                     toast.success(data.message);
                     displayPost();
