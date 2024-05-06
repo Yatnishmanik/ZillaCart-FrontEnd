@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import React, { useRef, useMemo } from "react";
 import config from '../config'
 import Joi from 'joi-browser';
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
 
 
 const validationSchema = Joi.object({
@@ -63,7 +65,9 @@ const SidePostCreate = ({ placeholder }) => {
   const createNewPost = async (values) => {
     try {
       console.log(values)
-      const { data } = await axios.post(`${config.URL}/api/sidebar/post-create`, values);
+      const { data } = await axios.post(`${config.URL}/api/sidebar/post-create`, values,{headers: {
+        'authorization': `Bearer ${token}`
+    }});
       toast.success("post created");
     } catch (error) {
       console.log(error);

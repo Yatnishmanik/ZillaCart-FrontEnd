@@ -10,6 +10,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { toast } from 'react-toastify';
 import config from '../config'
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
 
 const AdminDashboard = () => {
     const [posts, setPosts] = useState([]);
@@ -50,7 +52,9 @@ const AdminDashboard = () => {
             await axios.post(`${config.URL}/api/post/category`, {
                 name: categoryName,
                 description: categoryDescription
-            });
+            },{headers: {
+                'authorization': `Bearer ${token}`
+            }});
             toast.success('Category added successfully!');
             closeAddCategoryDialog();
             // Optionally, refresh the list of categories
@@ -75,7 +79,9 @@ const AdminDashboard = () => {
     const deletePostById = async (e, id) => {
         if (window.confirm("Are you sure you want to delete this post?")) {
             try {
-                const { data } = await axios.delete(`${config.URL}/api/delete/post/${id}`);
+                const { data } = await axios.delete(`${config.URL}/api/delete/post/${id}`,{headers: {
+                    'authorization': `Bearer ${token}`
+                }});
                 if (data.success === true) {
                     toast.success(data.message);
                     displayPost();

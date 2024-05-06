@@ -1,21 +1,23 @@
 import React, { useRef, useMemo, useState, useEffect } from "react";
-import { Box, Button, TextField, Typography, MenuItem } from "@mui/material";
+import { Box, Button, TextField, Typography} from "@mui/material";
 import Dropzone from "react-dropzone";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useFormik } from "formik";
-
+import configg from '../config'
 import axios from "axios";
 import { toast } from "react-toastify";
 import JoditEditor from "jodit-react";
 import Joi from "joi-browser";
-import config from '../config'
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
+
 
 const CreatePost = ({ placeholder }) => {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${config.URL}/api/show/category`);
+        const response = await axios.get(`${configg.URL}/api/show/category`);
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -67,7 +69,9 @@ const CreatePost = ({ placeholder }) => {
 
   const createNewPost = async (values) => {
     try {
-      const { data } = await axios.post(`${config.URL}/api/post/create`, values);
+       await axios.post(`${configg.URL}/api/post/create`, values,{headers: {
+        'authorization': `Bearer ${token}`
+    }});
       toast.success("Post created");
     } catch (error) {
       console.error("Error creating post:", error);

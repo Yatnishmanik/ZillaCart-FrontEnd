@@ -3,3 +3,5 @@ const config = {
   };
   
   export default config;
+  //https://zillacart-backend.onrender.com
+  //http://localhost:3000

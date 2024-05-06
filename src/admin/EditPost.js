@@ -8,7 +8,10 @@ import { toast } from "react-toastify";
 import JoditEditor from "jodit-react";
 import React, { useEffect, useState,useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import config from '../config'
+import configg from '../config'
+const token =  JSON.parse(localStorage.getItem('userInfo'))?.accesstoken;
+// console.log("@@@@@@@",token);
+
 const validationSchema = yup.object({
   title: yup.string().min(4).required("Post title is required"),
   content: yup.string().min(10).required("Text content is required"),
@@ -16,6 +19,7 @@ const validationSchema = yup.object({
 
 const EditPost = ({ placeholder }) => {
   const editor = useRef(null);
+  const [cate,setCate]=useState()
   const { id } = useParams();
   const [categories, setCategories] = useState([]);
   const [title, setTitle] = useState("");
@@ -26,7 +30,7 @@ const EditPost = ({ placeholder }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${config.URL}/api/show/category`);
+        const response = await axios.get(`${configg.URL}/api/show/category`);
         console.log("***********")
         console.log(response.data);
         setCategories(response.data);
@@ -51,7 +55,7 @@ const EditPost = ({ placeholder }) => {
       title,
       content,
       image: "",
-      category: "", // Add category field to initialValues
+      category: cate, // Add category field to initialValues
     },
     validationSchema: validationSchema,
     enableReinitialize: true,
@@ -68,8 +72,9 @@ const EditPost = ({ placeholder }) => {
 
   const singlePostById = async () => {
     try {
-      const { data } = await axios.get(`${config.URL}/api/post/${id}`);
+      const { data } = await axios.get(`${configg.URL}/api/post/${id}`);
       setTitle(data.post.title);
+      setCate(data?.post?.category)
       setContent(stripHtmlTags(data.post.content));
       setImagePreview(data.post.image.url);
     } catch (error) {
@@ -88,8 +93,10 @@ const EditPost = ({ placeholder }) => {
 
   const updatePost = async (values) => {
     try {
-      // console.log(values);
-      const { data } = await axios.put(`${config.URL}/api/update/post/${id}`, values);
+      console.log(values);
+      const { data } = await axios.put(`${configg.URL}/api/update/post/${id}`, values,{headers: {
+        'authorization': `Bearer ${token}`
+    }});
       if (data.success === true) {
         toast.success("Post updated");
         navigate("/admin/dashboard");
@@ -137,6 +144,7 @@ const EditPost = ({ placeholder }) => {
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
+                  
                 </option>
               ))}
             </select>
